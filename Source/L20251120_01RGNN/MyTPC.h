@@ -82,4 +82,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
 	TObjectPtr<UInputAction>IA_Reload;
+
+	UFUNCTION(BlueprintCallable)
+	void HitReaction();
+
+	UFUNCTION(BlueprintCallable)
+	void ReloadWeapon();
 };

@@ -61,7 +61,6 @@ void AMyTPC::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	UEnhancedInputComponent* UIC = Cast<UEnhancedInputComponent>(PlayerInputComponent);
 	if (UIC)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Reload Setup"));
 		UIC->BindAction(IA_Reload, ETriggerEvent::Completed, this, &AMyTPC::Reload);
 	}
 }
@@ -100,9 +99,23 @@ void AMyTPC::Reload()
 	AWeaponBase* ChildWeapon = Cast<AWeaponBase>(Weapon->GetChildActor());
 	if (ChildWeapon)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Reload"));
-
 		PlayAnimMontage(ChildWeapon->ReloadMontage);
+	}
+}
+
+void AMyTPC::HitReaction()
+{
+	FString SectionName = FString::Printf(TEXT("%d"), FMath::RandRange(1, 8));
+
+	PlayAnimMontage(HitMontage, 1.0f, FName(*SectionName));
+}
+
+void AMyTPC::ReloadWeapon()
+{
+	AWeaponBase* ChildWeapon = Cast<AWeaponBase>(Weapon->GetChildActor());
+	if (ChildWeapon)
+	{
+		ChildWeapon->Reload();
 	}
 }
 
