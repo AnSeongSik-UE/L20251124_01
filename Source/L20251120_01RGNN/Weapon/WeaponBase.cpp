@@ -34,3 +34,9 @@ void AWeaponBase::Reload()
 	CurrentBulletCount = MaxBulletCount;
 	UE_LOG(LogTemp, Warning, TEXT("Reloaded."));
 }
+
+void AWeaponBase::Fire()
+{
+	--CurrentBulletCount;
+	UE_LOG(LogTemp, Warning, TEXT("%d"), CurrentBulletCount);
+}

@@ -15,5 +15,6 @@ class L20251120_01RGNN_API UAnimNotify_Reload : public UAnimNotify
 	GENERATED_BODY()
 	
 	virtual FString GetNotifyName_Implementation() const override;
+
 	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;
 };

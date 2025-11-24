@@ -43,6 +43,7 @@ void AMyTPC::BeginPlay()
 	if (ChildWeapon)
 	{
 		ChildWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, ChildWeapon->SocketName);
+		WeaponState = EWeaponState::Pistol;
 	}
 	
 }
@@ -62,6 +63,7 @@ void AMyTPC::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	if (UIC)
 	{
 		UIC->BindAction(IA_Reload, ETriggerEvent::Completed, this, &AMyTPC::Reload);
+		UIC->BindAction(IA_Fire, ETriggerEvent::Triggered, this, &AMyTPC::DoFire);
 	}
 }
 
@@ -100,6 +102,15 @@ void AMyTPC::Reload()
 	if (ChildWeapon)
 	{
 		PlayAnimMontage(ChildWeapon->ReloadMontage);
+	}
+}
+
+void AMyTPC::DoFire()
+{
+	AWeaponBase* ChildWeapon = Cast<AWeaponBase>(Weapon->GetChildActor());
+	if (ChildWeapon)
+	{
+		ChildWeapon->Fire();
 	}
 }
 

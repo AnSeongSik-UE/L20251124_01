@@ -62,6 +62,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Reload();
 
+	UFUNCTION(BlueprintCallable)
+	void DoFire();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
 	uint8 bLeftLean : 1;
 
@@ -72,7 +75,7 @@ public:
 	uint8 bAiming : 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
-	EWeaponState WeaponState;
+	EWeaponState WeaponState = EWeaponState::Unarmed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
 	TObjectPtr<UAnimMontage> HitMontage;
@@ -82,6 +85,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
 	TObjectPtr<UInputAction>IA_Reload;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
+	TObjectPtr<UInputAction>IA_Fire;
 
 	UFUNCTION(BlueprintCallable)
 	void HitReaction();
