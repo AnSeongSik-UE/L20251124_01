@@ -6,6 +6,9 @@
 #include "GameFramework/Character.h"
 #include "MyTPC.generated.h"
 
+class UInputAction;
+class UAnimMontage;
+
 UENUM(BlueprintType)
 enum class EWeaponState :uint8
 {
@@ -28,18 +31,21 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class USpringArmComponent> SpringArm;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UCameraComponent> Camera;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UChildActorComponent> Weapon;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
-	TObjectPtr<class USpringArmComponent> SpringArm;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
-	TObjectPtr<class UCameraComponent> Camera;
 
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	void Movement(float InX, float InY);
@@ -52,6 +58,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	void Jog();
+
+	UFUNCTION(BlueprintCallable)
+	void Reload();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
 	uint8 bLeftLean : 1;
@@ -70,4 +79,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
 	TObjectPtr<UAnimMontage> DeathMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
+	TObjectPtr<UInputAction>IA_Reload;
 };

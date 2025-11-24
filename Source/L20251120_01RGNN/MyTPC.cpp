@@ -5,8 +5,12 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/ChildActorComponent.h"
 
 #include "Kismet/KismetMathLibrary.h"
+#include "EnhancedInputComponent.h"
+
+#include "Weapon/WeaponBase.h"
 
 // Sets default values
 AMyTPC::AMyTPC()
@@ -24,12 +28,22 @@ AMyTPC::AMyTPC()
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	Camera->SetupAttachment(SpringArm);
+
+	Weapon = CreateDefaultSubobject<UChildActorComponent>(TEXT("Weapon"));
+	Weapon->SetupAttachment(GetMesh());
 }
 
 // Called when the game starts or when spawned
 void AMyTPC::BeginPlay()
 {
 	Super::BeginPlay();
+
+	//무기 집으면 잡게 이동
+	AWeaponBase* ChildWeapon = Cast<AWeaponBase>(Weapon->GetChildActor());
+	if (ChildWeapon)
+	{
+		ChildWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, ChildWeapon->SocketName);
+	}
 	
 }
 
@@ -44,7 +58,12 @@ void AMyTPC::Tick(float DeltaTime)
 void AMyTPC::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
+	UEnhancedInputComponent* UIC = Cast<UEnhancedInputComponent>(PlayerInputComponent);
+	if (UIC)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Reload Setup"));
+		UIC->BindAction(IA_Reload, ETriggerEvent::Completed, this, &AMyTPC::Reload);
+	}
 }
 
 void AMyTPC::Movement(float InX, float InY)
@@ -74,5 +93,16 @@ void AMyTPC::Sprint()
 void AMyTPC::Jog()
 {
 	GetCharacterMovement()->MaxWalkSpeed = 600;
+}
+
+void AMyTPC::Reload()
+{
+	AWeaponBase* ChildWeapon = Cast<AWeaponBase>(Weapon->GetChildActor());
+	if (ChildWeapon)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Reload"));
+
+		PlayAnimMontage(ChildWeapon->ReloadMontage);
+	}
 }
 
