@@ -16,7 +16,10 @@ void AMyHUD::DrawHUD()
 	int32 UnitY = Canvas->SizeY / 100;
 	int32 CenterX = Canvas->SizeX / 2;
 	int32 CenterY = Canvas->SizeY / 2;
-	int32 DrawSize = 4;
+
+	int32 TargetSize = 4;
+
+	AimResizeTimer += UGameplayStatics::GetWorldDeltaSeconds(GetWorld());
 
 	AMyTPC* BaseCharacter = Cast<AMyTPC>(GetOwningPawn());
 	if (BaseCharacter)
@@ -24,12 +27,28 @@ void AMyHUD::DrawHUD()
 		GroundSpeed = BaseCharacter->GetCharacterMovement()->Velocity.Size2D();
 		if (GroundSpeed > 600)
 		{
-			DrawSize = 12;
+			TargetSize = 12;
 		}
-		else if (GroundSpeed > 450)
+		else if (GroundSpeed > 300)
 		{
-			DrawSize = 8;
+			TargetSize = 8;
 		}
+		else
+		{
+			TargetSize = 4;
+		}
+	}
+	if(AimResizeTimer > 0.1f)
+	{
+		if (DrawSize < TargetSize)
+		{
+			++DrawSize;
+		}
+		else if (DrawSize > TargetSize)
+		{
+			--DrawSize;
+		}
+		AimResizeTimer = 0;
 	}
 
 	Draw2DLine(CenterX - (UnitX * DrawSize),

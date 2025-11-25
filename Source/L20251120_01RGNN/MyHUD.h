@@ -17,4 +17,8 @@ public:
 	virtual void DrawHUD() override;
 
 	float GroundSpeed;
+
+	int32 DrawSize = 4;
+
+	float AimResizeTimer = 0.0f;
 };
