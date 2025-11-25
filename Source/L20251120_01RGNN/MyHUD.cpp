@@ -12,54 +12,50 @@ void AMyHUD::DrawHUD()
 {
 	Super::DrawHUD();
 
-	int32 UnitX = Canvas->SizeX / 100;
-	int32 UnitY = Canvas->SizeY / 100;
+	int32 Unit = Canvas->SizeX / 100;
 	int32 CenterX = Canvas->SizeX / 2;
 	int32 CenterY = Canvas->SizeY / 2;
 
-	int32 TargetSize = 4;
+	int32 DrawSize = Unit * 2;
 
-	AimResizeTimer += UGameplayStatics::GetWorldDeltaSeconds(GetWorld());
+	float CurrentSpeed = 0.0f;
+	float MaxSpeed = 0.0f;
+	float GapRatio = 0.0f;
+	int32 Gap = Unit * 3;
 
 	AMyTPC* BaseCharacter = Cast<AMyTPC>(GetOwningPawn());
 	if (BaseCharacter)
 	{
-		GroundSpeed = BaseCharacter->GetCharacterMovement()->Velocity.Size2D();
-		if (GroundSpeed > 600)
-		{
-			TargetSize = 12;
-		}
-		else if (GroundSpeed > 300)
-		{
-			TargetSize = 8;
-		}
-		else
-		{
-			TargetSize = 4;
-		}
-	}
-	if(AimResizeTimer > 0.1f)
-	{
-		if (DrawSize < TargetSize)
-		{
-			++DrawSize;
-		}
-		else if (DrawSize > TargetSize)
-		{
-			--DrawSize;
-		}
-		AimResizeTimer = 0;
+		MaxSpeed = BaseCharacter->GetCharacterMovement()->GetMaxSpeed();
+		CurrentSpeed = BaseCharacter->GetCharacterMovement()->Velocity.Size2D();
+		GapRatio = CurrentSpeed / MaxSpeed;
+
 	}
 
-	Draw2DLine(CenterX - (UnitX * DrawSize),
+	Gap = (int32)((float)Gap * GapRatio);
+
+	//LeftX
+	Draw2DLine(CenterX - DrawSize - Gap,
 		CenterY,
-		CenterX + (UnitX * DrawSize),
+		CenterX - Gap,
 		CenterY,
 		FColor(255, 0, 0, 0));
-
+	//RightX
+	Draw2DLine(CenterX + DrawSize + Gap,
+		CenterY,
+		CenterX + Gap,
+		CenterY,
+		FColor(255, 0, 0, 0));
+	//UpY
 	Draw2DLine(CenterX,
-		CenterY - (UnitY * DrawSize),
+		CenterY - DrawSize - Gap,
 		CenterX,
-		CenterY + (UnitY * DrawSize),
+		CenterY - Gap,
+		FColor(255, 0, 0, 0));
+	//ButtomY
+	Draw2DLine(CenterX,
+		CenterY + DrawSize + Gap,
+		CenterX,
+		CenterY + Gap,
 		FColor(255, 0, 0, 0));
 }

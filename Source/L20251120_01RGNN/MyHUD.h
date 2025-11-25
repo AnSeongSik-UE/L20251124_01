@@ -15,10 +15,4 @@ class L20251120_01RGNN_API AMyHUD : public AHUD
 	GENERATED_BODY()
 public:
 	virtual void DrawHUD() override;
-
-	float GroundSpeed;
-
-	int32 DrawSize = 4;
-
-	float AimResizeTimer = 0.0f;
 };
