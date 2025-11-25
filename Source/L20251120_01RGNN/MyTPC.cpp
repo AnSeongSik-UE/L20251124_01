@@ -6,11 +6,14 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/ChildActorComponent.h"
+#include "EnhancedInputComponent.h"
+#include "Weapon/WeaponBase.h"
+#include "Weapon/BaseDamageType.h"
+#include "Engine/DamageEvents.h"
 
 #include "Kismet/KismetMathLibrary.h"
-#include "EnhancedInputComponent.h"
-
-#include "Weapon/WeaponBase.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AMyTPC::AMyTPC()
@@ -31,6 +34,13 @@ AMyTPC::AMyTPC()
 
 	Weapon = CreateDefaultSubobject<UChildActorComponent>(TEXT("Weapon"));
 	Weapon->SetupAttachment(GetMesh());
+
+	DeathSections.Add("Back_01");
+	DeathSections.Add("Front_01");
+	DeathSections.Add("Front_02");
+	DeathSections.Add("Front_03");
+	DeathSections.Add("Left_01");
+	DeathSections.Add("Right_01");
 }
 
 // Called when the game starts or when spawned
@@ -44,6 +54,7 @@ void AMyTPC::BeginPlay()
 	{
 		ChildWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, ChildWeapon->SocketName);
 		WeaponState = EWeaponState::Pistol;
+		ChildWeapon->SetOwner(this);
 	}
 	
 }
@@ -63,7 +74,9 @@ void AMyTPC::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	if (UIC)
 	{
 		UIC->BindAction(IA_Reload, ETriggerEvent::Completed, this, &AMyTPC::Reload);
-		UIC->BindAction(IA_Fire, ETriggerEvent::Triggered, this, &AMyTPC::DoFire);
+
+		UIC->BindAction(IA_Fire, ETriggerEvent::Started, this, &AMyTPC::StartFire);
+		UIC->BindAction(IA_Fire, ETriggerEvent::Completed, this, &AMyTPC::StopFire);
 	}
 }
 
@@ -114,6 +127,22 @@ void AMyTPC::DoFire()
 	}
 }
 
+void AMyTPC::StartFire()
+{
+	bIsFire = true;
+	DoFire();
+}
+
+void AMyTPC::StopFire()
+{
+	bIsFire = false;
+	AWeaponBase* ChildWeapon = Cast<AWeaponBase>(Weapon->GetChildActor());
+	if (ChildWeapon)
+	{
+		ChildWeapon->StopFire();
+	}
+}
+
 void AMyTPC::HitReaction()
 {
 	FString SectionName = FString::Printf(TEXT("%d"), FMath::RandRange(1, 8));
@@ -130,3 +159,59 @@ void AMyTPC::ReloadWeapon()
 	}
 }
 
+float AMyTPC::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+
+	if(CurrentHP > 0.0f )
+	{
+		if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
+		{
+			FPointDamageEvent* Event = (FPointDamageEvent*)(&DamageEvent);
+			if (Event)
+			{
+				CurrentHP -= Damage;
+				UE_LOG(LogTemp, Warning, TEXT("Point Damage %f %s"), Damage, *Event->HitInfo.BoneName.ToString());
+			}
+		}
+		else if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
+		{
+			FRadialDamageEvent* Event = (FRadialDamageEvent*)(&DamageEvent);
+			if (Event)
+			{
+				CurrentHP -= Damage;
+				UE_LOG(LogTemp, Warning, TEXT("Radial Damage %f %s"), Damage, *Event->DamageTypeClass->GetName());
+			}
+		}
+		else //(DamageEvent.IsOfType(FDamageEvent::ClassID)) 먼저 if하면 FDamageEvent로 덮어씌워버림
+		{
+			CurrentHP -= Damage;
+			UE_LOG(LogTemp, Warning, TEXT("Damage %f"), Damage);
+		}
+		DoHitReact();
+	}
+
+	if (CurrentHP <= 0.0f)
+	{
+		DoDead();
+	}
+
+	return Damage;
+}
+
+void AMyTPC::DoDeadEnd()
+{
+	GetController()->SetActorEnableCollision(false);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	GetMesh()->SetSimulatePhysics(true);
+}
+
+void AMyTPC::DoDead()
+{
+	PlayAnimMontage(DeathMontage, 1.0f, DeathSections[UKismetMathLibrary::RandomIntegerInRange(0, 5)]);
+}
+
+void AMyTPC::DoHitReact()
+{
+	PlayAnimMontage(HitMontage, 1.0f, (FName)*FString::FromInt(UKismetMathLibrary::RandomIntegerInRange(1, 8)));
+}

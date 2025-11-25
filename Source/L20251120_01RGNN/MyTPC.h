@@ -65,6 +65,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void DoFire();
 
+	UFUNCTION(BlueprintCallable)
+	void StartFire();
+
+	UFUNCTION(BlueprintCallable)
+	void StopFire();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
 	uint8 bLeftLean : 1;
 
@@ -94,4 +100,27 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void ReloadWeapon();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
+	float CurrentHP = 100;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
+	float MaxHP = 100;
+
+	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
+	TArray<FName> DeathSections;
+
+	UFUNCTION(BlueprintCallable)
+	void DoDeadEnd();
+
+	UFUNCTION(BlueprintCallable)
+	void DoDead();
+
+	UFUNCTION(BlueprintCallable)
+	void DoHitReact();
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
+	uint8 bIsFire : 1 = false;
 };
