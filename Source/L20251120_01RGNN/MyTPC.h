@@ -90,10 +90,13 @@ public:
 	TObjectPtr<UAnimMontage> DeathMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
-	TObjectPtr<UInputAction>IA_Reload;
+	TObjectPtr<UInputAction> IA_Reload;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
-	TObjectPtr<UInputAction>IA_Fire;
+	TObjectPtr<UInputAction> IA_Fire;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
+	TObjectPtr<UInputAction> IA_IronSight;
 
 	UFUNCTION(BlueprintCallable)
 	void HitReaction();
@@ -123,10 +126,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
 	uint8 bIsFire : 1 = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
+	uint8 bIsIronSight : 1 = false;
+
 	UFUNCTION()
 	void ProcessBeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
 
 	void UseItem(class APickupItemBase* PickedUpItem);
+
 	void EatItem(class APickupItemBase* PickedUpItem);
+
 	void EquipItem(class APickupItemBase* PickedUpItem);
+
+	void StartIronSight();
+
+	void StopIronSight();
 };

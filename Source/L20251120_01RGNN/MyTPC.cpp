@@ -70,6 +70,9 @@ void AMyTPC::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 		UIC->BindAction(IA_Fire, ETriggerEvent::Started, this, &AMyTPC::StartFire);
 		UIC->BindAction(IA_Fire, ETriggerEvent::Completed, this, &AMyTPC::StopFire);
+
+		UIC->BindAction(IA_IronSight, ETriggerEvent::Started, this, &AMyTPC::StartIronSight);
+		UIC->BindAction(IA_IronSight, ETriggerEvent::Completed, this, &AMyTPC::StopIronSight);
 	}
 }
 
@@ -268,5 +271,21 @@ void AMyTPC::EquipItem(APickupItemBase* PickedUpItem)
 			WeaponState = EWeaponState::Rifle;
 			ChildWeapon->SetOwner(this);
 		}
+		else if (ChildWeapon->Name.Compare(TEXT("Launcher")) == 0)
+		{
+			ChildWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, ChildWeapon->SocketName);
+			WeaponState = EWeaponState::Rifle;
+			ChildWeapon->SetOwner(this);
+		}
 	}
+}
+
+void AMyTPC::StartIronSight()
+{
+	bIsIronSight = true;
+}
+
+void AMyTPC::StopIronSight()
+{
+	bIsIronSight = false;
 }
