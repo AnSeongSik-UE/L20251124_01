@@ -6,6 +6,8 @@
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
 
+#include "Kismet/GameplayStatics.h"
+
 // Sets default values
 AProjectileBase::AProjectileBase()
 {
@@ -29,7 +31,7 @@ AProjectileBase::AProjectileBase()
 void AProjectileBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	OnActorBeginOverlap.AddDynamic(this, &AProjectileBase::ProcessBeginOverlap);
 }
 
 // Called every frame
@@ -37,5 +39,39 @@ void AProjectileBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AProjectileBase::ProcessBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
+{
+	//////RPG
+	////UGameplayStatics::ApplyDamage(
+	////	HitResult.GetActor(),
+	////	50,
+	////	GetController(),
+	////	this,
+	////	UBaseDamageType::StaticClass()
+	////);
+	////ÃÑ
+	//UGameplayStatics::ApplyPointDamage(
+	//	HitResult.GetActor(),
+	//	50,
+	//	-HitResult.ImpactNormal,
+	//	HitResult,
+	//	PC,
+	//	this,
+	//	UBaseDamageType::StaticClass()
+	//);
+	//////¹üÀ§, ÆøÅº
+	////UGameplayStatics::ApplyRadialDamage(
+	////	HitResult.GetActor(),
+	////	50,
+	////	HitResult.ImpactPoint,
+	////	300.0f,
+	////	UBaseDamageType::StaticClass(),
+	////	IgnoreActors,
+	////	this,
+	////	GetController(),
+	////	true
+	////);
 }
 

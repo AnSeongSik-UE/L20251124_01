@@ -32,7 +32,7 @@ public:
 	TObjectPtr<USkeletalMeshComponent> Mesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
-	TSoftObjectPtr<AProjectileBase> ProjectileTemplate;
+	TSubclassOf<AProjectileBase> ProjectileTemplate;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	FName SocketName = TEXT("HandGrip_R");
