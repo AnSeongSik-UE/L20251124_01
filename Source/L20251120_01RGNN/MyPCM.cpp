@@ -4,6 +4,8 @@
 #include "MyPCM.h"
 #include "MyTPC.h"
 
+#include "Kismet/KismetMathLibrary.h"
+
 AMyPCM::AMyPCM()
 {
 }
@@ -17,11 +19,12 @@ void AMyPCM::UpdateCamera(float DeltaTime)
 	{
 		if (Pawn->bIsIronSight)
 		{
-			SetFOV(60.0f);
+			SetFOV(UKismetMathLibrary::FInterpTo(GetFOVAngle(), 60.0f, DeltaTime, 5.0f));
 		}
 		else
 		{
-			SetFOV(90.0f);
+			SetFOV(UKismetMathLibrary::FInterpTo(GetFOVAngle(), 90.0f, DeltaTime, 5.0f));
 		}
+		//UE_LOG(LogTemp, Warning, TEXT("%f"), GetFOVAngle());
 	}
 }
