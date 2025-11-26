@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "../ItemBase.h"
 #include "WeaponBase.generated.h"
 
 class USkeletalMeshComponent;
@@ -11,7 +12,7 @@ class AProjectileBase;
 class UAnimMontage;
 
 UCLASS()
-class L20251120_01RGNN_API AWeaponBase : public AActor
+class L20251120_01RGNN_API AWeaponBase : public AItemBase
 {
 	GENERATED_BODY()
 	
@@ -35,6 +36,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	FName SocketName = TEXT("HandGrip_R");
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+	FName Name;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	int32 MaxBulletCount = 100;

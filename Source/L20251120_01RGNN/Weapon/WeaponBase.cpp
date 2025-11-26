@@ -58,7 +58,7 @@ void AWeaponBase::Fire()
 
 	ACharacter* Character = Cast<ACharacter>(GetOwner());
 
-	ensure(Character);
+	//ensure(Character);
 	//check(Character);
 
 	APlayerController* PC = Cast<APlayerController>(Character->GetController());
@@ -140,7 +140,7 @@ void AWeaponBase::Fire()
 
 	--CurrentBulletCount;
 	UE_LOG(LogTemp, Warning, TEXT("%d"), CurrentBulletCount);
-	ensure(FireSound);
+	//ensure(FireSound);
 	UGameplayStatics::SpawnSoundAtLocation(GetWorld(), FireSound, GetActorLocation());
 
 	TimeofLastShoot = GetWorld()->TimeSeconds;

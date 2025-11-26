@@ -10,6 +10,7 @@
 #include "Weapon/WeaponBase.h"
 #include "Weapon/BaseDamageType.h"
 #include "Engine/DamageEvents.h"
+#include "PickupItemBase.h"
 
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -48,15 +49,7 @@ void AMyTPC::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//무기 집으면 잡게 이동
-	AWeaponBase* ChildWeapon = Cast<AWeaponBase>(Weapon->GetChildActor());
-	if (ChildWeapon)
-	{
-		ChildWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, ChildWeapon->SocketName);
-		WeaponState = EWeaponState::Pistol;
-		ChildWeapon->SetOwner(this);
-	}
-	
+	OnActorBeginOverlap.AddDynamic(this, &AMyTPC::ProcessBeginOverlap);
 }
 
 // Called every frame
@@ -214,4 +207,66 @@ void AMyTPC::DoDead()
 void AMyTPC::DoHitReact()
 {
 	PlayAnimMontage(HitMontage, 1.0f, (FName)*FString::FromInt(UKismetMathLibrary::RandomIntegerInRange(1, 8)));
+}
+
+void AMyTPC::ProcessBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
+{
+	APickupItemBase* PickedUpItem = Cast<APickupItemBase>(OtherActor);
+
+	if (PickedUpItem)
+	{
+		//FActorSpawnParameters SpawnParams;
+		//SpawnParams.Owner = this;
+		//SpawnParams.Instigator = this;
+		//SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		//SpawnParams.TransformScaleMethod = ESpawnActorScaleMethod::MultiplyWithRoot;
+
+		//장작하는 아이템, 먹는거냐, 사용하는거냐?
+		switch (PickedUpItem->ItemType)
+		{
+		case EItemType::Use:
+			UseItem(PickedUpItem);
+			break;
+		case EItemType::Eat:
+			EatItem(PickedUpItem);
+			break;
+		case EItemType::Equip:
+			EquipItem(PickedUpItem);
+			break;
+		}
+
+		if(!PickedUpItem->bIsInfinity)
+		{
+			PickedUpItem->Destroy();
+		}
+	}
+}
+
+void AMyTPC::UseItem(APickupItemBase* PickedUpItem)
+{
+}
+
+void AMyTPC::EatItem(APickupItemBase* PickedUpItem)
+{
+}
+
+void AMyTPC::EquipItem(APickupItemBase* PickedUpItem)
+{
+	Weapon->SetChildActorClass(PickedUpItem->ItemTemplate);
+	AWeaponBase* ChildWeapon = Cast<AWeaponBase>(Weapon->GetChildActor());
+	if (ChildWeapon)
+	{
+		if (ChildWeapon->Name.Compare(TEXT("Pistol")) == 0)
+		{
+			ChildWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, ChildWeapon->SocketName);
+			WeaponState = EWeaponState::Pistol;
+			ChildWeapon->SetOwner(this);
+		}
+		else if (ChildWeapon->Name.Compare(TEXT("Rifle")) == 0)
+		{
+			ChildWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, ChildWeapon->SocketName);
+			WeaponState = EWeaponState::Rifle;
+			ChildWeapon->SetOwner(this);
+		}
+	}
 }

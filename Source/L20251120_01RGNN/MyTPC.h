@@ -120,7 +120,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void DoHitReact();
 
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
 	uint8 bIsFire : 1 = false;
+
+	UFUNCTION()
+	void ProcessBeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
+
+	void UseItem(class APickupItemBase* PickedUpItem);
+	void EatItem(class APickupItemBase* PickedUpItem);
+	void EquipItem(class APickupItemBase* PickedUpItem);
 };
