@@ -33,6 +33,7 @@ void AProjectileBase::BeginPlay()
 {
 	Super::BeginPlay();
 	OnActorBeginOverlap.AddDynamic(this, &AProjectileBase::ProcessBeginOverlap);
+	OnActorHit.AddDynamic(this, &AProjectileBase::ProcessOnActorHit);
 }
 
 // Called every frame
@@ -44,28 +45,6 @@ void AProjectileBase::Tick(float DeltaTime)
 
 void AProjectileBase::ProcessBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
 {
-	AActor* OtherPawn = Cast<APawn>(OtherActor);
-	if (OtherPawn)
-	{
-		UGameplayStatics::SpawnEmitterAtLocation(
-			GetWorld(),
-			BloodEffect,
-			HitResult.ImpactPoint,
-			HitResult.ImpactNormal.Rotation()
-		);
-	}
-
-	UDecalComponent* MadeDecal = UGameplayStatics::SpawnDecalAtLocation(
-		GetWorld(),
-		Decal,
-		FVector(5.0f,5.0f,5.0f),
-		HitResult.ImpactPoint,
-		HitResult.ImpactNormal.Rotation(),
-		5.0f
-		);
-
-	MadeDecal->SetFadeScreenSize(0.005f);
-
 	//////RPG
 	////UGameplayStatics::ApplyDamage(
 	////	HitResult.GetActor(),
@@ -96,5 +75,37 @@ void AProjectileBase::ProcessBeginOverlap(AActor* OverlappedActor, AActor* Other
 	////	GetController(),
 	////	true
 	////);
+}
+
+void AProjectileBase::ProcessOnActorHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit)
+{
+	UE_LOG(LogTemp, Warning, TEXT("%s"),*SelfActor->GetName());
+	AActor* OtherPawn = Cast<APawn>(OtherActor);
+	if(OtherPawn != UGameplayStatics::GetPlayerController(GetWorld(),0)->GetPawn())
+	{
+		if (OtherPawn)
+		{
+			UGameplayStatics::SpawnEmitterAtLocation(
+				GetWorld(),
+				BloodEffect,
+				Hit.ImpactPoint,
+				Hit.ImpactNormal.Rotation()
+			);
+		}
+		else
+		{
+			UDecalComponent* MadeDecal = UGameplayStatics::SpawnDecalAtLocation(
+				GetWorld(),
+				Decal,
+				FVector(5.0f, 5.0f, 5.0f),
+				HitResult.ImpactPoint,
+				HitResult.ImpactNormal.Rotation(),
+				5.0f
+			);
+
+			MadeDecal->SetFadeScreenSize(0.005f);
+		}
+	}
+	Destroy();
 }
 
