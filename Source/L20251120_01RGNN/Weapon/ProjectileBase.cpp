@@ -6,6 +6,7 @@
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/DecalComponent.h"
+#include "BaseDamageType.h"
 
 #include "Kismet/GameplayStatics.h"
 
@@ -18,6 +19,7 @@ AProjectileBase::AProjectileBase()
 	Box = CreateDefaultSubobject<UBoxComponent>(TEXT("Box"));
 	RootComponent = Box;
 	Box->SetBoxExtent(FVector(10, 10, 5));
+	Box->GetBodyInstance()->bNotifyRigidBodyCollision = true;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(Box);
@@ -32,8 +34,10 @@ AProjectileBase::AProjectileBase()
 void AProjectileBase::BeginPlay()
 {
 	Super::BeginPlay();
-	OnActorBeginOverlap.AddDynamic(this, &AProjectileBase::ProcessBeginOverlap);
-	OnActorHit.AddDynamic(this, &AProjectileBase::ProcessOnActorHit);
+	//OnActorBeginOverlap.AddDynamic(this, &AProjectileBase::ProcessBeginOverlap);
+	//OnActorHit.AddDynamic(this, &AProjectileBase::ProcessOnActorHit);
+	Box->OnComponentHit.AddDynamic(this, &AProjectileBase::ProcessOnComponentHit);
+	SetLifeSpan(5.0f);
 }
 
 // Called every frame
@@ -79,7 +83,6 @@ void AProjectileBase::ProcessBeginOverlap(AActor* OverlappedActor, AActor* Other
 
 void AProjectileBase::ProcessOnActorHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit)
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s"),*SelfActor->GetName());
 	AActor* OtherPawn = Cast<APawn>(OtherActor);
 	if(OtherPawn != UGameplayStatics::GetPlayerController(GetWorld(),0)->GetPawn())
 	{
@@ -98,8 +101,8 @@ void AProjectileBase::ProcessOnActorHit(AActor* SelfActor, AActor* OtherActor, F
 				GetWorld(),
 				Decal,
 				FVector(5.0f, 5.0f, 5.0f),
-				HitResult.ImpactPoint,
-				HitResult.ImpactNormal.Rotation(),
+				Hit.ImpactPoint,
+				Hit.ImpactNormal.Rotation(),
 				5.0f
 			);
 
@@ -107,5 +110,44 @@ void AProjectileBase::ProcessOnActorHit(AActor* SelfActor, AActor* OtherActor, F
 		}
 	}
 	Destroy();
+}
+
+void AProjectileBase::ProcessOnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	SpawnHitEffect(Hit);
+
+	APawn* Pawn = Cast<APawn>(GetOwner()->GetOwner());
+	if(Pawn)
+	{
+		UGameplayStatics::ApplyPointDamage(
+			HitResult.GetActor(),
+			50,
+			-HitResult.ImpactNormal,
+			HitResult,
+			Pawn->GetController(),
+			this,
+			UBaseDamageType::StaticClass()
+		);
+	}
+	Destroy();
+}
+
+void AProjectileBase::SpawnHitEffect(FHitResult Hit)
+{
+	if(Decal)
+	{
+		UDecalComponent* MadeDecal = UGameplayStatics::SpawnDecalAtLocation(
+			GetWorld(),
+			Decal,
+			FVector(5.0f, 5.0f, 5.0f),
+			Hit.ImpactPoint,
+			Hit.ImpactNormal.Rotation(),
+			5.0f
+		);
+		if(MadeDecal)
+		{
+			MadeDecal->SetFadeScreenSize(0.005f);
+		}
+	}
 }
 

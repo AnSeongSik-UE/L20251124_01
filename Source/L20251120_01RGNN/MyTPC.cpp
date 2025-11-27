@@ -11,6 +11,7 @@
 #include "Weapon/BaseDamageType.h"
 #include "Engine/DamageEvents.h"
 #include "PickupItemBase.h"
+#include "Components/DecalComponent.h"
 
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -159,35 +160,38 @@ float AMyTPC::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AControl
 {
 	Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
 
-	if(CurrentHP > 0.0f )
+	if (CurrentHP <= 0)
 	{
-		if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
-		{
-			FPointDamageEvent* Event = (FPointDamageEvent*)(&DamageEvent);
-			if (Event)
-			{
-				CurrentHP -= Damage;
-				UE_LOG(LogTemp, Warning, TEXT("Point Damage %f %s"), Damage, *Event->HitInfo.BoneName.ToString());
-			}
-		}
-		else if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
-		{
-			FRadialDamageEvent* Event = (FRadialDamageEvent*)(&DamageEvent);
-			if (Event)
-			{
-				CurrentHP -= Damage;
-				UE_LOG(LogTemp, Warning, TEXT("Radial Damage %f %s"), Damage, *Event->DamageTypeClass->GetName());
-			}
-		}
-		else //(DamageEvent.IsOfType(FDamageEvent::ClassID)) 먼저 if하면 FDamageEvent로 덮어씌워버림
-		{
-			CurrentHP -= Damage;
-			UE_LOG(LogTemp, Warning, TEXT("Damage %f"), Damage);
-		}
-		DoHitReact();
+		return Damage;
 	}
 
-	if (CurrentHP <= 0.0f)
+	if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
+	{
+		FPointDamageEvent* Event = (FPointDamageEvent*)(&DamageEvent);
+		if (Event)
+		{
+			CurrentHP -= Damage;
+			UE_LOG(LogTemp, Warning, TEXT("Point Damage %f %s"), Damage, *Event->HitInfo.BoneName.ToString());
+		}
+		SpawnHitEffect(Event->HitInfo);
+	}
+	else if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
+	{
+		FRadialDamageEvent* Event = (FRadialDamageEvent*)(&DamageEvent);
+		if (Event)
+		{
+			CurrentHP -= Damage;
+			UE_LOG(LogTemp, Warning, TEXT("Radial Damage %f %s"), Damage, *Event->DamageTypeClass->GetName());
+		}
+	}
+	else //(DamageEvent.IsOfType(FDamageEvent::ClassID)) 먼저 if하면 FDamageEvent로 덮어씌워버림
+	{
+		CurrentHP -= Damage;
+		UE_LOG(LogTemp, Warning, TEXT("Damage %f"), Damage);
+	}
+	DoHitReact();
+
+	if (CurrentHP <= 0)
 	{
 		DoDead();
 	}
@@ -288,4 +292,17 @@ void AMyTPC::StartIronSight()
 void AMyTPC::StopIronSight()
 {
 	bIsIronSight = false;
+}
+
+void AMyTPC::SpawnHitEffect(FHitResult Hit)
+{
+	if(BloodEffect)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(
+			GetWorld(),
+			BloodEffect,
+			Hit.ImpactPoint,
+			Hit.ImpactNormal.Rotation()
+		);
+	}
 }

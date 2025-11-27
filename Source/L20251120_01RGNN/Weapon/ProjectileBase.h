@@ -57,4 +57,10 @@ public:
 
 	UFUNCTION()
 	void ProcessOnActorHit (AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
+
+	UFUNCTION()
+	void ProcessOnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+	UFUNCTION(BlueprintCallable)
+	virtual void SpawnHitEffect(FHitResult Hit);
 };
