@@ -55,6 +55,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	TObjectPtr<USoundBase> FireSound;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+	TObjectPtr<UParticleSystem> MuzzleFlash;
+
 	UFUNCTION(BlueprintCallable)
 	void Reload();
 
@@ -74,7 +77,7 @@ public:
 	float TimeofLastShoot = 0.0f;
 
 	UFUNCTION(BlueprintCallable)
-	void FireProjectile();
+	void FireProjectile(FTransform SpawnTransform, FHitResult InHitResult);
 
 	FTimerHandle RefireTimer;
 };

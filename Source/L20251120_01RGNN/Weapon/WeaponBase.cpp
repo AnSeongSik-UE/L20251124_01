@@ -111,16 +111,17 @@ void AWeaponBase::Fire()
 
 		FRotator AimRotation = UKismetMathLibrary::FindLookAtRotation(SpawnLocation, TargetLocation + (UKismetMathLibrary::RandomUnitVector() * 0.3f));
 
-		FTransform SpawnTransform(AimRotation, SpawnLocation, FVector::OneVector);
+		FireProjectile(FTransform(AimRotation, SpawnLocation, FVector::OneVector), HitResult);
 
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.Owner = this;
-		SpawnParams.Instigator = Character;
-		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		SpawnParams.TransformScaleMethod = ESpawnActorScaleMethod::MultiplyWithRoot;
+		UGameplayStatics::SpawnEmitterAtLocation(
+			GetWorld(),
+			MuzzleFlash,
+			SpawnLocation,
+			AimRotation
+		);
 
-		GetWorld()->SpawnActor<AProjectileBase>(ProjectileTemplate, SpawnTransform, SpawnParams);
-		
+		//Recoil
+
 		Character->AddControllerPitchInput(-0.5f);
 	}
 
@@ -132,8 +133,10 @@ void AWeaponBase::Fire()
 	TimeofLastShoot = GetWorld()->TimeSeconds;
 }
 
-void AWeaponBase::FireProjectile()
+void AWeaponBase::FireProjectile(FTransform SpawnTransform, FHitResult InHitResult)
 {
+	AProjectileBase* Projectile = GetWorld()->SpawnActor<AProjectileBase>(ProjectileTemplate, SpawnTransform);
+	Projectile->HitResult = InHitResult;
 }
 
 void AWeaponBase::StopFire()

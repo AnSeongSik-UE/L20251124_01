@@ -5,6 +5,7 @@
 #include "GameframeWork/ProjectileMovementComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/DecalComponent.h"
 
 #include "Kismet/GameplayStatics.h"
 
@@ -43,6 +44,28 @@ void AProjectileBase::Tick(float DeltaTime)
 
 void AProjectileBase::ProcessBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
 {
+	AActor* OtherPawn = Cast<APawn>(OtherActor);
+	if (OtherPawn)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(
+			GetWorld(),
+			BloodEffect,
+			HitResult.ImpactPoint,
+			HitResult.ImpactNormal.Rotation()
+		);
+	}
+
+	UDecalComponent* MadeDecal = UGameplayStatics::SpawnDecalAtLocation(
+		GetWorld(),
+		Decal,
+		FVector(5.0f,5.0f,5.0f),
+		HitResult.ImpactPoint,
+		HitResult.ImpactNormal.Rotation(),
+		5.0f
+		);
+
+	MadeDecal->SetFadeScreenSize(0.005f);
+
 	//////RPG
 	////UGameplayStatics::ApplyDamage(
 	////	HitResult.GetActor(),
