@@ -50,7 +50,7 @@ AMyTPC::AMyTPC()
 	//----------------------------------------------------------------------//
 	// IGenericTeamAgentInterface
 	//----------------------------------------------------------------------//
-	TeamID = 1;
+	SetGenericTeamId(1);
 }
 
 // Called when the game starts or when spawned
