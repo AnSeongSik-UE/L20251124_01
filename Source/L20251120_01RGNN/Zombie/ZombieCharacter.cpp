@@ -34,6 +34,11 @@ void AZombieCharacter::Tick(float DeltaTime)
 	//SetActorRotation(UKismetMathLibrary::RInterpTo(GetActorRotation(), ZombieDirection, DeltaTime, 5.f));
 }
 
+void AZombieCharacter::SetState(EZombieState NewState)
+{
+	CurrentState = NewState;
+}
+
 float AZombieCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);

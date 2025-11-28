@@ -12,6 +12,7 @@
 #include "Engine/DamageEvents.h"
 #include "PickupItemBase.h"
 #include "Components/DecalComponent.h"
+#include "Perception/AIPerceptionStimuliSourceComponent.h"
 
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -43,6 +44,8 @@ AMyTPC::AMyTPC()
 	DeathSections.Add("Front_03");
 	DeathSections.Add("Left_01");
 	DeathSections.Add("Right_01");
+
+	StimuliSource = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("StimuliSource"));
 }
 
 // Called when the game starts or when spawned

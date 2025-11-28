@@ -8,6 +8,7 @@
 
 class UInputAction;
 class UAnimMontage;
+class UAIPerceptionStimuliSourceComponent;
 
 UENUM(BlueprintType)
 enum class EWeaponState :uint8
@@ -46,6 +47,9 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
+	TObjectPtr<UAIPerceptionStimuliSourceComponent> StimuliSource;
 
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	void Movement(float InX, float InY);
