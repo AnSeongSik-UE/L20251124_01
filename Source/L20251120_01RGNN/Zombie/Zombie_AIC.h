@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "ZombieCharacter.h"
 #include "Zombie_AIC.generated.h"
 
 class UAIPerceptionComponent;
@@ -39,4 +40,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	TObjectPtr<UBehaviorTree> RunBTAsset;
+
+	void SetState(EZombieState NewState);
 };

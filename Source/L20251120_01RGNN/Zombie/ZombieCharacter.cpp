@@ -3,6 +3,8 @@
 
 #include "ZombieCharacter.h"
 #include "Engine/DamageEvents.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Zombie_AIC.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -75,7 +77,13 @@ float AZombieCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 
 	if (CurrentHP <= 0)
 	{
-		DoDead();
+		//DoDead();
+		SetState(EZombieState::Death);
+		AZombie_AIC* AIC = Cast<AZombie_AIC>(GetController());
+		if (AIC)
+		{
+			AIC->SetState(EZombieState::Death);
+		}
 	}
 
 	return Damage;
@@ -90,6 +98,7 @@ void AZombieCharacter::DoDeadEnd()
 
 void AZombieCharacter::DoDead()
 {
+	GetController()->UnPossess();
 	//PlayAnimMontage(DeathMontage, 1.0f, DeathSections[UKismetMathLibrary::RandomIntegerInRange(0, 5)]);
 }
 
@@ -104,4 +113,15 @@ void AZombieCharacter::SpawnHitEffect(FHitResult Hit)
 			Hit.ImpactNormal.Rotation()
 		);
 	}
+}
+
+void AZombieCharacter::ChangeSpeed(float NewMaxSpeed)
+{
+	GetCharacterMovement()->MaxWalkSpeed = NewMaxSpeed;
+}
+
+void AZombieCharacter::ProcessOnActorHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit)
+{
+	UGameplayStatics::ApplyDamage(OtherActor, 10, GetController(), this, nullptr);
+	UE_LOG(LogTemp, Warning, TEXT("ZomAtt"));
 }

@@ -57,4 +57,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	TObjectPtr<UParticleSystem> BloodEffect;
+
+	void ChangeSpeed(float NewMaxSpeed);
+
+	FORCEINLINE const EZombieState GetCurrentState() { return CurrentState; }
+
+	void ProcessOnActorHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
 };

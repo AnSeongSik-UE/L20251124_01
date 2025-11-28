@@ -123,7 +123,7 @@ void AProjectileBase::ProcessOnComponentHit(UPrimitiveComponent* HitComponent, A
 			HitResult.GetActor(),
 			50,
 			-HitResult.ImpactNormal,
-			HitResult,
+			Hit,
 			Pawn->GetController(),
 			this,
 			UBaseDamageType::StaticClass()
