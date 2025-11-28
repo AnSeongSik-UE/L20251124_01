@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "GenericTeamAgentInterface.h"
 #include "MyTPC.generated.h"
 
 class UInputAction;
@@ -20,7 +21,7 @@ enum class EWeaponState :uint8
 };
 
 UCLASS()
-class L20251120_01RGNN_API AMyTPC : public ACharacter
+class L20251120_01RGNN_API AMyTPC : public ACharacter, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -151,4 +152,14 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	TObjectPtr<UParticleSystem> BloodEffect;
+
+	//----------------------------------------------------------------------//
+	// IGenericTeamAgentInterface
+	//----------------------------------------------------------------------//
+	FGenericTeamId TeamID;
+	/** Assigns Team Agent to given TeamID */
+	virtual void SetGenericTeamId(const FGenericTeamId& InTeamID) override;
+
+	/** Retrieve team identifier in form of FGenericTeamId */
+	virtual FGenericTeamId GetGenericTeamId() const override;
 };

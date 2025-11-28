@@ -16,7 +16,7 @@ AZombie_AIC::AZombie_AIC()
 	Sight->DetectionByAffiliation.bDetectEnemies = true;
 	Sight->DetectionByAffiliation.bDetectNeutrals = false;
 	Sight->DetectionByAffiliation.bDetectFriendlies = false;
-	//Sight->SetMaxAge(0);						//망각시간 0이면 바로 까먹음
+	Sight->SetMaxAge(0);						//망각시간 0이면 바로 까먹음
 	Perception->ConfigureSense(*Sight);
 	Perception->SetDominantSense(*Sight->GetSenseImplementation());
 
@@ -35,6 +35,7 @@ void AZombie_AIC::OnPossess(APawn* InPawn)
 	Perception->OnTargetPerceptionUpdated.AddDynamic(this, &AZombie_AIC::ProcessActorPerception);
 	Perception->OnTargetPerceptionForgotten.AddDynamic(this, &AZombie_AIC::ProcessActorPerceptionForget);
 	Perception->OnTargetPerceptionInfoUpdated.AddDynamic(this, &AZombie_AIC::ProcessActorPerceptionInfo);
+	SetGenericTeamId(3); // 255는 중립
 }
 
 void AZombie_AIC::OnUnPossess()

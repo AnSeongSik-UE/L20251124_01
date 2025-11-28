@@ -46,6 +46,11 @@ AMyTPC::AMyTPC()
 	DeathSections.Add("Right_01");
 
 	StimuliSource = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("StimuliSource"));
+
+	//----------------------------------------------------------------------//
+	// IGenericTeamAgentInterface
+	//----------------------------------------------------------------------//
+	TeamID = 1;
 }
 
 // Called when the game starts or when spawned
@@ -308,4 +313,17 @@ void AMyTPC::SpawnHitEffect(FHitResult Hit)
 			Hit.ImpactNormal.Rotation()
 		);
 	}
+}
+
+//----------------------------------------------------------------------//
+// IGenericTeamAgentInterface
+//----------------------------------------------------------------------//
+void AMyTPC::SetGenericTeamId(const FGenericTeamId& InTeamID)
+{
+	TeamID = InTeamID;
+}
+
+FGenericTeamId AMyTPC::GetGenericTeamId() const
+{
+	return TeamID;
 }
