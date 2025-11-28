@@ -3,10 +3,23 @@
 
 #include "Zombie_AIC.h"
 #include "Perception/AIPerceptionComponent.h"
+#include "Perception/AISenseConfig_Sight.h"
 
 AZombie_AIC::AZombie_AIC()
 {
 	Perception = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("Perception"));
+
+	UAISenseConfig_Sight* Sight = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("Sight"));
+	Sight->SightRadius = 300.0f;				//인식거리
+	Sight->LoseSightRadius = 400.0f;			//놓침거리
+	Sight->PeripheralVisionAngleDegrees = 45.0f;//시야각
+	Sight->DetectionByAffiliation.bDetectEnemies = true;
+	Sight->DetectionByAffiliation.bDetectNeutrals = false;
+	Sight->DetectionByAffiliation.bDetectFriendlies = false;
+	//Sight->SetMaxAge(0);						//망각시간 0이면 바로 까먹음
+	Perception->ConfigureSense(*Sight);
+	Perception->SetDominantSense(*Sight->GetSenseImplementation());
+
 }
 
 void AZombie_AIC::OnPossess(APawn* InPawn)
